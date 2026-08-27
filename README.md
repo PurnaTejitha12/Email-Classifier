@@ -1,73 +1,94 @@
-This is a rule-based Spam Email Classifier Web Application that predicts whether an email subject line is SPAM or NOT SPAM. The system uses predefined keyword-based rules and assigns scores to detect spam messages.
+# 📧 Spam Email Classifier
 
-The project is built using:
+An interactive and user-friendly **Spam Email Classifier** web application built using **Python, Flask, HTML, CSS, and JavaScript**.
 
-🐍 Python (Flask Backend)
+The application analyzes email text and identifies whether it is likely to be **🚨 SPAM** or **✅ NOT SPAM** using a keyword-based scoring system.
 
+---
 
-🌐 HTML (Frontend Structure)
+## 🚀 Live Demo
 
+🌐 **Live Website:** YOUR_DEPLOYMENT_LINK
 
-🎨 CSS (Styling)
+👉 Click the link above to try the Spam Email Classifier online.
 
+> 💡 Replace `YOUR_DEPLOYMENT_LINK` with your actual deployment URL.
 
-⚡ JavaScript (Frontend Logic)
+---
 
+## ✨ Features
 
-🚀 Features
+📧 **Email Classification**
+- Enter an email subject or message.
+- Instantly check whether it is spam.
 
+🔍 **Spam Detection**
+- Detects predefined spam-related keywords.
+- Calculates a spam score based on matched keywords.
 
-📧 Detects spam based on email subject line
+📊 **Score Analysis**
+- Displays the total spam score.
+- Shows exactly which keywords were detected.
 
+🚨 **Spam Alert**
+- Clearly displays `SPAM` when the score reaches the threshold.
+- Uses a red warning-style result.
 
-⚡ Real-time prediction using web interface
+✅ **Safe Email Detection**
+- Displays `NOT SPAM` when the score is below the threshold.
+- Uses a green success-style result.
 
+🎨 **Interactive UI**
+- Modern gradient background.
+- Clean and attractive interface.
+- Smooth hover effects and animations.
+- Responsive design for different screen sizes.
 
-📊 Displays spam score and matched keywords
+💡 **Example Messages**
+- Includes ready-to-use spam examples.
+- Includes normal email examples for testing.
 
+🗑️ **Clear Button**
+- Quickly clears the entered text and previous result.
 
-🎯 Simple rule-based classification system
+⌨️ **Keyboard Support**
+- Press `Enter` to check the email.
 
+📱 **Responsive Design**
+- Works on desktop, tablet, and mobile devices.
 
-💻 Beginner-friendly full-stack project
+---
 
+## 🛠️ Technologies Used
 
-🧠 How It Works
+🐍 **Python**  
+Used for the backend logic.
 
-User enters an email subject line
+🌐 **Flask**  
+Used to create the web server and prediction API.
 
+🎨 **HTML5**  
+Used to create the structure of the website.
 
-Text is cleaned and converted to lowercase
+💅 **CSS3**  
+Used for styling, animations, gradients, buttons, cards, and responsive design.
 
+⚡ **JavaScript**  
+Used for frontend interaction and communication with the Flask API.
 
-System checks for spam keywords like:
+🔎 **Regular Expressions**  
+Used to clean and process the input text.
 
+---
 
-free, win, cash, urgent, offer, prize, loan
+## 📂 Project Structure
 
-
-Each keyword adds a score
-
-
-If score ≥ threshold → SPAM
-
-
-Else → NOT SPAM
-
-
-🛠️ Tech Stack
-
-
-Python 🐍
-
-
-Flask 🌐
-
-
-HTML 🌐
-
-
-CSS 🎨
-
-
-JavaScript ⚡
+```text
+spam-email-classifier/
+│
+├── app.py
+│
+├── templates/
+│   └── index.html
+│
+└── README.md
