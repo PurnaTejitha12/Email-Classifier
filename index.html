@@ -1,21 +1,445 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Spam Classifier</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Spam Email Classifier</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 500px;
+            background: white;
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+            text-align: center;
+        }
+
+        .icon {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #777;
+            margin-bottom: 25px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 8px rgba(102, 126, 234, 0.3);
+        }
+
+        button {
+            width: 100%;
+            margin-top: 15px;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #resultBox {
+            display: none;
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: left;
+            animation: showResult 0.4s ease;
+        }
+
+        @keyframes showResult {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .spam {
+            background: #ffe5e5;
+            border: 2px solid #ff4d4d;
+            color: #b30000;
+        }
+
+        .not-spam {
+            background: #e5ffe9;
+            border: 2px solid #28a745;
+            color: #08751d;
+        }
+
+        .result-title {
+            font-size: 25px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .result-item {
+            margin: 8px 0;
+            font-size: 15px;
+        }
+
+        .result-item strong {
+            color: #333;
+        }
+
+        .matched {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            color: #444;
+        }
+
+        .loader {
+            display: none;
+            margin: 20px auto 0;
+            width: 30px;
+            height: 30px;
+            border: 4px solid #ddd;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .examples {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .examples p {
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .example {
+            display: inline-block;
+            padding: 7px 10px;
+            margin: 3px;
+            background: #f1f1ff;
+            color: #555;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+
+        .example:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .clear-btn {
+            background: #555;
+            margin-top: 10px;
+        }
+
+        .clear-btn:hover {
+            background: #333;
+        }
+
+        .footer {
+            margin-top: 25px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 25px;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
     <div class="container">
-        <h1>📧 Spam Email Classifier</h1>
 
-        <input type="text" id="textInput" placeholder="Enter email subject">
+        <div class="icon">📧</div>
 
-        <button onclick="checkSpam()">Check</button>
+        <h1>Spam Email Classifier</h1>
+
+        <p class="subtitle">
+            Enter an email subject to check whether it is spam.
+        </p>
+
+        <input
+            type="text"
+            id="textInput"
+            placeholder="Enter email subject..."
+            onkeydown="handleEnter(event)"
+        >
+
+        <button id="checkButton" onclick="checkSpam()">
+            🔍 Check Email
+        </button>
+
+        <div class="loader" id="loader"></div>
 
         <div id="resultBox"></div>
+
+        <div class="examples">
+            <p>Try an example:</p>
+
+            <span
+                class="example"
+                onclick="useExample('Congratulations! You won a free lottery prize!')">
+                🎁 Possible Spam
+            </span>
+
+            <span
+                class="example"
+                onclick="useExample('You have won $1,000,000. Claim your prize now!')">
+                💰 Lottery
+            </span>
+
+            <span
+                class="example"
+                onclick="useExample('Meeting scheduled for tomorrow at 10 AM')">
+                📅 Normal Email
+            </span>
+        </div>
+
+        <button class="clear-btn" onclick="clearInput()">
+            🗑️ Clear
+        </button>
+
+        <div class="footer">
+            Spam Email Classifier • Flask + HTML + CSS + JavaScript
+        </div>
+
     </div>
 
-    <script src="/static/script.js"></script>
+
+    <script>
+
+        function checkSpam() {
+
+            const textInput = document.getElementById("textInput");
+            const resultBox = document.getElementById("resultBox");
+            const button = document.getElementById("checkButton");
+            const loader = document.getElementById("loader");
+
+            const text = textInput.value.trim();
+
+            if (text === "") {
+                alert("Please enter an email subject.");
+                return;
+            }
+
+            // Show loading
+            button.disabled = true;
+            button.textContent = "Checking...";
+            loader.style.display = "block";
+            resultBox.style.display = "none";
+
+            fetch("/predict", {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    text: text
+                })
+            })
+
+            .then(response => {
+
+                if (!response.ok) {
+                    throw new Error("Server error");
+                }
+
+                return response.json();
+            })
+
+            .then(data => {
+
+                loader.style.display = "none";
+
+                button.disabled = false;
+                button.textContent = "🔍 Check Email";
+
+                resultBox.style.display = "block";
+
+                const isSpam =
+                    data.result.toUpperCase() === "SPAM";
+
+                if (isSpam) {
+
+                    resultBox.className = "spam";
+
+                    resultBox.innerHTML = `
+                        <div class="result-title">
+                            🚨 SPAM DETECTED
+                        </div>
+
+                        <div class="result-item">
+                            <strong>Score:</strong>
+                            ${data.score}
+                        </div>
+
+                        <div class="result-item">
+                            <strong>Result:</strong>
+                            ${data.result}
+                        </div>
+
+                        <div class="matched">
+                            <strong>🔎 Matched Words:</strong><br>
+                            ${data.matched.length > 0
+                                ? data.matched.join(", ")
+                                : "None"}
+                        </div>
+                    `;
+
+                } else {
+
+                    resultBox.className = "not-spam";
+
+                    resultBox.innerHTML = `
+                        <div class="result-title">
+                            ✅ NOT SPAM
+                        </div>
+
+                        <div class="result-item">
+                            <strong>Score:</strong>
+                            ${data.score}
+                        </div>
+
+                        <div class="result-item">
+                            <strong>Result:</strong>
+                            ${data.result}
+                        </div>
+
+                        <div class="matched">
+                            <strong>🔎 Matched Words:</strong><br>
+                            ${data.matched.length > 0
+                                ? data.matched.join(", ")
+                                : "None"}
+                        </div>
+                    `;
+                }
+
+            })
+
+            .catch(error => {
+
+                console.error(error);
+
+                loader.style.display = "none";
+
+                button.disabled = false;
+                button.textContent = "🔍 Check Email";
+
+                resultBox.style.display = "block";
+                resultBox.className = "spam";
+
+                resultBox.innerHTML = `
+                    <div class="result-title">
+                        ⚠️ Error
+                    </div>
+
+                    <p>
+                        Unable to connect to the server.
+                        Please make sure your Flask backend is running.
+                    </p>
+                `;
+            });
+        }
+
+
+        function useExample(text) {
+
+            document.getElementById("textInput").value = text;
+
+            document.getElementById("resultBox").style.display = "none";
+        }
+
+
+        function clearInput() {
+
+            document.getElementById("textInput").value = "";
+
+            document.getElementById("resultBox").style.display = "none";
+
+            document.getElementById("textInput").focus();
+        }
+
+
+        function handleEnter(event) {
+
+            if (event.key === "Enter") {
+                checkSpam();
+            }
+        }
+
+    </script>
+
 </body>
 </html>
