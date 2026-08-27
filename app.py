@@ -34,10 +34,10 @@ def analyze(text):
     score = 0
     matched = []
 
-    for w in words:
-        if w in SPAM_KEYWORDS:
-            score += SPAM_KEYWORDS[w]
-            matched.append(w)
+    for word in words:
+        if word in SPAM_KEYWORDS:
+            score += SPAM_KEYWORDS[word]
+            matched.append(word)
 
     result = "SPAM" if score >= THRESHOLD else "NOT SPAM"
 
@@ -55,8 +55,21 @@ def home():
 
 @app.route("/predict", methods=["POST"])
 def predict():
-    data = request.json["text"]
-    return jsonify(analyze(data))
+    data = request.get_json()
+
+    if not data or "text" not in data:
+        return jsonify({
+            "error": "No text provided"
+        }), 400
+
+    text = data["text"]
+
+    if not isinstance(text, str) or not text.strip():
+        return jsonify({
+            "error": "Please enter some text"
+        }), 400
+
+    return jsonify(analyze(text))
 
 
 if __name__ == "__main__":
