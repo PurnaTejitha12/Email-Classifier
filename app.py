@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 import re
+import os
 
 app = Flask(__name__)
 
@@ -28,8 +29,8 @@ def clean_text(text):
 
 
 def analyze(text):
-    text = clean_text(text)
-    words = text.split()
+    cleaned_text = clean_text(text)
+    words = cleaned_text.split()
 
     score = 0
     matched = []
@@ -55,22 +56,36 @@ def home():
 
 @app.route("/predict", methods=["POST"])
 def predict():
-    data = request.get_json()
+    try:
+        data = request.get_json()
 
-    if not data or "text" not in data:
+        if not data or "text" not in data:
+            return jsonify({
+                "error": "No text provided"
+            }), 400
+
+        text = data["text"]
+
+        if not isinstance(text, str) or not text.strip():
+            return jsonify({
+                "error": "Please enter some text"
+            }), 400
+
+        return jsonify(analyze(text))
+
+    except Exception as e:
         return jsonify({
-            "error": "No text provided"
-        }), 400
+            "error": str(e)
+        }), 500
 
-    text = data["text"]
 
-    if not isinstance(text, str) or not text.strip():
-        return jsonify({
-            "error": "Please enter some text"
-        }), 400
-
-    return jsonify(analyze(text))
+@app.route("/health")
+def health():
+    return jsonify({
+        "status": "ok"
+    })
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
