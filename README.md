@@ -4,17 +4,6 @@ An interactive and user-friendly **Spam Email Classifier** web application built
 
 The application analyzes email text and identifies whether it is likely to be **🚨 SPAM** or **✅ NOT SPAM** using a keyword-based scoring system.
 
----
-
-## 🚀 Live Demo
-
-🌐 **Live Website:** YOUR_DEPLOYMENT_LINK
-
-👉 Click the link above to try the Spam Email Classifier online.
-
-> 💡 Replace `YOUR_DEPLOYMENT_LINK` with your actual deployment URL.
-
----
 
 ## ✨ Features
 
