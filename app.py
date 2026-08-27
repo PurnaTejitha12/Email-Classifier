@@ -4,6 +4,7 @@ import os
 
 app = Flask(__name__)
 
+# 🚨 Spam keywords and their scores
 SPAM_KEYWORDS = {
     "free": 2,
     "win": 2,
@@ -19,15 +20,18 @@ SPAM_KEYWORDS = {
     "cheap": 1
 }
 
+# 🎯 Minimum score required to classify as spam
 THRESHOLD = 3
 
 
+# 🧹 Clean the input text
 def clean_text(text):
     text = text.lower()
     text = re.sub(r"[^a-zA-Z ]", "", text)
     return text
 
 
+# 🔍 Analyze the email
 def analyze(text):
     cleaned_text = clean_text(text)
     words = cleaned_text.split()
@@ -40,7 +44,11 @@ def analyze(text):
             score += SPAM_KEYWORDS[word]
             matched.append(word)
 
-    result = "SPAM" if score >= THRESHOLD else "NOT SPAM"
+    # 🚨 Determine result
+    if score >= THRESHOLD:
+        result = "SPAM"
+    else:
+        result = "NOT SPAM"
 
     return {
         "score": score,
@@ -49,43 +57,66 @@ def analyze(text):
     }
 
 
+# 🏠 Home page
 @app.route("/")
 def home():
     return render_template("index.html")
 
 
+# 🔮 Prediction API
 @app.route("/predict", methods=["POST"])
 def predict():
+
     try:
         data = request.get_json()
 
-        if not data or "text" not in data:
+        # Check if data exists
+        if not data:
             return jsonify({
-                "error": "No text provided"
+                "error": "No data received"
+            }), 400
+
+        # Check if text exists
+        if "text" not in data:
+            return jsonify({
+                "error": "Text field is required"
             }), 400
 
         text = data["text"]
 
+        # Check empty text
         if not isinstance(text, str) or not text.strip():
             return jsonify({
                 "error": "Please enter some text"
             }), 400
 
-        return jsonify(analyze(text))
+        # Analyze the email
+        result = analyze(text)
+
+        return jsonify(result)
 
     except Exception as e:
+
         return jsonify({
             "error": str(e)
         }), 500
 
 
+# ❤️ Health check
 @app.route("/health")
 def health():
     return jsonify({
-        "status": "ok"
+        "status": "running",
+        "message": "Spam Classifier Backend is working!"
     })
 
 
+# 🚀 Run Flask
 if __name__ == "__main__":
+
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+
+    app.run(
+        host="0.0.0.0",
+        port=port
+    )
